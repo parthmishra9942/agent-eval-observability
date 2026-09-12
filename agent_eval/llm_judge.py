@@ -1,18 +1,21 @@
+import re
 from typing import Dict, Any
 from agent_eval.tracer import TrajectoryRun
 
 class LLMJudgeEngine:
     """Scores agent trajectories using multi-dimensional rubrics."""
     def evaluate(self, run: TrajectoryRun, expected_outcome: str) -> Dict[str, Any]:
-        # Faithfulness check: ensure assertions align with step outputs
-        evidence_text = " ".join([s.output_payload for s in run.steps]).lower()
-        output_words = run.final_output.lower().split()
-        supported = [w for w in output_words if w in evidence_text or len(w) <= 3]
+        # Faithfulness check: ensure assertions align with step outputs & prompt
+        full_context = " ".join([s.output_payload for s in run.steps] + [s.input_payload for s in run.steps] + [run.task_prompt]).lower()
+        context_words = set(re.split(r'[\W_]+', full_context))
+        output_words = [w for w in re.split(r'[\W_]+', run.final_output.lower()) if w]
+        stopwords = {"there", "are", "is", "in", "the", "a", "an", "has", "been", "have", "with", "of", "to"}
+        supported = [w for w in output_words if w in context_words or w in stopwords or len(w) <= 3]
         faithfulness = round(len(supported) / max(len(output_words), 1), 3)
 
         # Answer relevance check: comparison with task prompt and expected outcome
-        expected_terms = set(expected_outcome.lower().split())
-        actual_terms = set(run.final_output.lower().split())
+        expected_terms = set(re.findall(r'\w+', expected_outcome.lower()))
+        actual_terms = set(re.findall(r'\w+', run.final_output.lower()))
         overlap = len(expected_terms.intersection(actual_terms))
         relevance = round(overlap / max(len(expected_terms), 1), 3)
 

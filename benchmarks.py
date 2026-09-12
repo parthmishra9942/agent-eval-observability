@@ -1,4 +1,6 @@
 import time
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 from agent_eval.regression_runner import RegressionBenchmarkRunner
 from agent_eval.dashboard import ObservabilityDashboard
 
