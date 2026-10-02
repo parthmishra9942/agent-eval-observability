@@ -7,6 +7,11 @@
 
 A production **Evaluation, Benchmarking & Observability Harness** for autonomous AI agents. Replays multi-step execution trajectories, scores agent behaviors across **Faithfulness**, **Answer Relevance**, and **Tool Precision** using an LLM-as-a-Judge scoring engine, and enforces CI/CD regression gates against latency and cost degradation.
 
+
+<p align="center">
+  <img src="assets/demo.gif" alt="Portfolio Showcase" width="100%" style="border-radius: 10px;">
+</p>
+
 ---
 
 ## 🏛️ Observability Architecture
